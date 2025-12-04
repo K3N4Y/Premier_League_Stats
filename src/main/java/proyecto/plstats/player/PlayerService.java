@@ -1,9 +1,11 @@
 package proyecto.plstats.player;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -60,6 +62,28 @@ public class PlayerService {
     public Player addPlayer(Player player){
         playerRepository.save(player);
         return player;
+    }
+
+    public Player updatePlayer (Player updatePlayer) {
+        Optional<Player> existingPlayer = playerRepository.findByName(updatePlayer.getName());
+
+        if (existingPlayer.isPresent()){
+            Player playerToUpdate = existingPlayer.get();
+            playerToUpdate.setName(updatePlayer.getName());
+            playerToUpdate.setTeam(updatePlayer.getTeam());
+            playerToUpdate.setPos(updatePlayer.getPos());
+            playerToUpdate.setNation(updatePlayer.getNation());
+
+            playerRepository.save(playerToUpdate);
+            return playerToUpdate;
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public void deletePlayer (String playerName){
+        playerRepository.deleteByName(playerName);
     }
 
 
